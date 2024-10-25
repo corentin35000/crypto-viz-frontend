@@ -18,16 +18,19 @@ Rôle : Ce dépôt contient le code pour l'interface utilisateur (UI) de l'appli
 Technologies : Développé avec Nuxt et TypeScript, le frontend utilise des librairies de visualisation (comme D3.js ou Chart.js) pour représenter les analyses de données avec une dimension temporelle. <br />
 Responsabilité : Ce service consomme l'API fournie par crypto-viz-backend pour afficher les graphiques et les données mises à jour.
 <br />
+
 2. `crypto-viz-scraper` <br />
 Rôle : Service de collecte de données en temps réel depuis un flux d’actualités sur les cryptomonnaies. <br />
 Technologies : Utilise Node.js ou Python avec des outils de scraping comme Puppeteer (Node.js) ou BeautifulSoup (Python). <br />
 Responsabilité : Il suit le modèle producteur/consommateur pour transmettre les données au broker de messages (crypto-viz-broker) dès qu'elles sont collectées. Ce composant est toujours actif pour assurer un flux continu de données.
 <br />
+
 3. `crypto-viz-backend` <br />
 Rôle : Service d’analyse des données collectées, qui traite et transforme les données reçues pour générer des analyses exploitables par le frontend. <br />
 Technologies : Construit avec un framework backend rapide, comme FastAPI (Python) ou Node.js avec Express. <br />
 Responsabilité : Le backend consomme les données via crypto-viz-broker, les analyse, et expose les résultats sous forme d’API pour le frontend. Ce service est en charge de la logique métier et du traitement des données pour en faire des insights significatifs.
- <br />
+<br />
+ 
 4. `crypto-viz-broker` <br />
 Rôle : Ce composant est le broker de messages et gère la communication entre le scraper, le backend, et le frontend. <br />
 Technologies : Utilisation de NATS ou RabbitMQ comme système de gestion de messages. <br />
