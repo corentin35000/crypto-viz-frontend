@@ -126,12 +126,18 @@ Pour plus de détails sur les conventions de commit, consultez : [Conventional C
 <br /><br /><br /><br />
 
 ## 🔄 Cycle Development
-
-1. macOS / Windows : Open Docker Desktop
-2. Run command :
-
+1. Run command :
 ```bash
-docker-compose up
+# Run frontend for development-local with nvm
+web:run:dev:local
+# Run frontend for development-remote with nvm
+web:run:dev:remote
+
+
+# Run frontend for development-local with docker
+web:run:dev:docker:local
+# Run frontend for development-remote with docker
+web:run:dev:docker:remote
 ```
 
 <br /><br /><br /><br />
