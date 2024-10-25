@@ -1,14 +1,34 @@
-# Flapi - StarterKit Frontend
+# Crypto Viz - Frontend
 
 ## 🛠 Tech Stack
 
 - TypeScript (Language)
 - Nuxt (Framework for Desktop, Mobile and Web)
-- Tauri (Framework for Desktop)
-- Capacitor (Framework for Mobile)
 - CI / CD (Github Actions)
 - Docker / DockerCompose (Development-Local)
 - Kubernetes (Development-Remote, Staging and Production)
+
+<br /><br /><br /><br />
+
+🏗️ Architecture de l'Application / Infrastructure
+Ce projet est structuré en quatre dépôts distincts pour assurer une modularité et une scalabilité maximales. Chaque dépôt est un microservice indépendant, permettant des mises à jour, des tests et un déploiement en continu pour chaque composant sans affecter les autres parties de l'application. Cette approche suit une architecture orientée microservices pour optimiser la flexibilité et la maintenabilité.
+
+1. crypto-viz-frontend
+Rôle : Ce dépôt contient le code pour l'interface utilisateur (UI) de l'application. Il permet aux utilisateurs finaux de visualiser les données et les analyses en temps réel.
+Technologies : Développé avec Nuxt et TypeScript, le frontend utilise des librairies de visualisation (comme D3.js ou Chart.js) pour représenter les analyses de données avec une dimension temporelle.
+Responsabilité : Ce service consomme l'API fournie par crypto-viz-backend pour afficher les graphiques et les données mises à jour.
+2. crypto-viz-scraper
+Rôle : Service de collecte de données en temps réel depuis un flux d’actualités sur les cryptomonnaies.
+Technologies : Utilise Node.js ou Python avec des outils de scraping comme Puppeteer (Node.js) ou BeautifulSoup (Python).
+Responsabilité : Il suit le modèle producteur/consommateur pour transmettre les données au broker de messages (crypto-viz-broker) dès qu'elles sont collectées. Ce composant est toujours actif pour assurer un flux continu de données.
+3. crypto-viz-backend
+Rôle : Service d’analyse des données collectées, qui traite et transforme les données reçues pour générer des analyses exploitables par le frontend.
+Technologies : Construit avec un framework backend rapide, comme FastAPI (Python) ou Node.js avec Express.
+Responsabilité : Le backend consomme les données via crypto-viz-broker, les analyse, et expose les résultats sous forme d’API pour le frontend. Ce service est en charge de la logique métier et du traitement des données pour en faire des insights significatifs.
+4. crypto-viz-broker
+Rôle : Ce composant est le broker de messages et gère la communication entre le scraper, le backend, et le frontend.
+Technologies : Utilisation de NATS ou RabbitMQ comme système de gestion de messages.
+Responsabilité : Assure le transfert efficace et en temps réel des messages entre le scraper (producteur de données) et le backend (consommateur/analyste des données). Il permet la scalabilité de l'application en découplant les composants.
 
 <br /><br /><br /><br />
 
@@ -75,163 +95,7 @@ Pour plus de détails sur les conventions de commit, consultez : [Conventional C
 
 <br /><br /><br /><br />
 
-## ⚙️Desktop - Setup Environment Development - Windows
-
-1. Download and Install Microsoft Visual Studio 2022 (MSVC >= v143 and Windows SDK >= 10): https://visualstudio.microsoft.com/fr/vs/
-2. Download and Install WebView2 (if windows < 10) : https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download-section
-3. Download and Install Rust version >= 1.81.0 : https://www.rust-lang.org/tools/install
-4. Spécifiquement pour build du ARM64 il faut installer LLVM et ajouté au PATH : https://github.com/llvm/llvm-project/releases
-5. Install NodeJS latest LTS for Nuxt/Tauri :
-
-```bash
-# nvm
-# nvm install : https://github.com/coreybutler/nvm-windows/releases
-# Install Node.js latest LTS
-nvm install lts && nvm use lts
-```
-
-6. Install dependencies for Nuxt.js/Tauri
-
-```bash
- # npm
- # Install dependencies
- npm install
-```
-
-7. Install targets rust for build/compile Tauri :
-
-```bash
-npm run desktop:install:target:windows
-```
-
-8. Il y a toujours une chaine d'outils qui est utilisé par défault, c'est celui qui est choisi lors de la compilation
-
-```bash
-# Pour connaitre la chaine d'outils actuellement utilisé :
-rustup default
-
-# Pour changer la chaine d'outils par défault utilisé, exemples :
-rustup default stable-x86_64-pc-windows-msvc # Windows x64
-rustup default stable-i686-pc-windows-msvc # Windows x86
-rustup default stable-aarch64-pc-windows-msvc # Windows arm64
-```
-
-<br />
-
-## ⚙️ Desktop - Setup Environment Development - macOS
-
-1. Setup Command Line Tools :
-
-```bash
-xcode-select --install
-```
-
-2. Download and Install Rust version >= 1.81.0 :
-
-```bash
-#curl
-curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh
-```
-
-3. Install NodeJS LTS latest for Nuxt/Tauri :
-
-```bash
-# nvm
-# nvm install : https://github.com/coreybutler/nvm-windows/releases
-# Install Node.js latest LTS
-nvm install lts && nvm use lts
-```
-
-4. Install dependencies for Nuxt/Tauri
-
-```bash
- # npm
- # Install dependencies
- npm install
-```
-
-5. Install targets rust for build/compile Tauri :
-
-```bash
-npm run desktop:install:target:macos
-```
-
-6. Il y a toujours une chaine d'outils qui est utilisé par défault, c'est celui qui est choisi lors de la compilation
-
-```bash
-# Pour connaitre la chaine d'outils actuellement utilisé :
-rustup default
-
-# Pour changer la chaine d'outils par défault utilisé, exemples :
-rustup default stable-x86_64-apple-darwin       # macOS Intel x64
-rustup default stable-aarch64-unknown-linux-gnu # macOS Apple Silicon arm64
-```
-
-<br />
-
-## ⚙️ Desktop - Setup Environment Development - Linux
-
-1. Dépendances système (Debian / Ubuntu) :
-
-```bash
-sudo apt update
-sudo apt install -y libwebkit2gtk-4.1-dev \
-  build-essential \
-  curl \
-  wget \
-  file \
-  libxdo-dev \
-  libssl-dev \
-  libayatana-appindicator3-dev \
-  librsvg2-dev \
-  fuse # for .AppImage
-```
-
-2. Install Rust version >= 1.81.0 :
-
-```bash
-#curl
-curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh
-```
-
-3. Install NodeJS latest LTS for Nuxt/Tauri :
-
-```bash
-# nvm
-# nvm install : https://github.com/coreybutler/nvm-windows/releases
-# Install Node.js latest LTS
- nvm install lts && nvm use lts
-```
-
-4. Install dependencies for Nuxt/Tauri
-
-```bash
- # npm
- # Install dependencies
- npm install
-```
-
-5. Install targets rust for build/compile Tauri :
-
-```bash
-npm run desktop:install:target:linux
-```
-
-6. Il y a toujours une chaine d'outils qui est utilisé par défault, c'est celui qui est choisi lors de la compilation
-
-```bash
-# Pour connaitre la chaine d'outils actuellement utilisé :
-rustup default
-
-# Pour changer la chaine d'outils par défault utilisé, exemples :
-rustup default stable-x86_64-unknown-linux-gnu  # Linux x64
-rustup default stable-i686-unknown-linux-gnu	   # Linux x86
-rustup default stable-aarch64-unknown-linux-gnu # Linux arm64
-```
-
-<br /><br />
-
-## ⚙️ Web - Setup Environment Development
+## ⚙️Setup Environment Development
 1. Steps by Platform :
 ```bash
 # Windows :
@@ -250,59 +114,14 @@ rustup default stable-aarch64-unknown-linux-gnu # Linux arm64
 3. Download and Install Docker (Debian) : https://docs.docker.com/engine/install/debian/
 ```
 
-<br /><br />
-
-## ⚙️ Mobile - Setup Environment Development
-### iOS 
-1. Download and Install `Xcode`
-2. Download and Install `Xcode Command Line Tools`
-```bash
-xcode-select --install
-```
-3. Download and Install `Homebrew`
-```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-```
-4. Download and Install `Cocoapods`
-```bash
-brew install cocoapods
-```
-### Android
-1. Download and Install `Android Studio` >= 2024.2.1 : https://developer.android.com/studio?hl=fr
-2. Configure SDK Android :
-   1. Ouvrir Android Studio.
-   2. Dans `Android Studio`, cliquez en haut sur `Tools` dans le menu, puis sur `SDK Manager`.
-   3. Une fenetre s'ouvre, ouvrer l'onglet `Languages & Frameworks` puis cliquer sur `Android SDK`.
-   4. Cliquer sur `SDK Platforms` et cocher les cases suivantes :
-      - **Android API 34** :
-         - `Android SDK Platform 34`
-         - `Sources for Android 34`
-         - `Google APIs Intel x86 Atom System Image`
-         - `Google APIs Play Intel x86 Atom System Image`
-   5. Cliquer ensuite sur `SDK Tools` et cocher les cases suivantes :
-      - **Android SDK Build-Tools 35**
-         - `Android SDK Build-Tools 34`
-      - **NDK (Side by side)**
-         - `26.3.11579264`
-      - **Android SDK Command-line Tools**
-         - `11.0`
-      - **CMake**
-         - `3.22.1`
-      - `Android Emulator`
-      - `Android Emulator Hypervisor Driver for AMD Processor`
-      - `Android Emulator Hypervisor Driver for Intel Processor`
-      - `Google USB Driver`
-   6. Puis cliquer sur le boutton `Apply` en bas à droite pour installer les packages.
-
 <br /><br /><br /><br />
 
 ## 🔄 Cycle Development
 
-1. Open Docker Desktop
+1. macOS / Windows : Open Docker Desktop
 2. Run command :
-
 ```bash
-
+docker-compose up
 ```
 
 <br /><br /><br /><br />
