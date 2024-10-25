@@ -50,7 +50,7 @@ Pour que cela sois pris en compte il faut utiliser les conventionnal commits : h
 Release Please crée une demande d'extraction de version après avoir remarqué que la branche par défaut contient des « unités publiables » depuis la dernière version. Une unité publiable est un commit sur la branche avec l'un des préfixes suivants : `feat` / `feat!` et `fix` / `fix!`. <br /><br />
 
 La première Release que créer release-please automatiquement est la version : 1.0.0 <br />
-Pour créer une Pre-Release faire un commit vide, par exemple si on'ai à la version 1.0.0, on peut faire :
+Pour créer une Pre-Release faire un commit vide, par exemple si on'ai à la version 1.0.0, on peut faire ::
 
 ```bash
 git commit --allow-empty -m "chore: release 1.1.0-rc.0" -m "Release-As: 1.1.0-rc.0"
@@ -114,7 +114,7 @@ Pour plus de détails sur les conventions de commit, consultez : [Conventional C
 
 # macOS :
 1. Requirements : macOS Intel x86_64 or macOS Apple Silicon arm64
-2. Requirements (2) : macOS 11.0 (Big Sur)
+2. Requirements (2) : macOS 11.0 (Big Sur) +
 2. Download and Install Docker Desktop : https://docs.docker.com/desktop/install/mac-install/
 
 # Linux (Ubuntu / Debian) :
@@ -126,7 +126,9 @@ Pour plus de détails sur les conventions de commit, consultez : [Conventional C
 <br /><br /><br /><br />
 
 ## 🔄 Cycle Development
+
 1. Run command :
+
 ```bash
 # Run frontend for development-local with nvm
 web:run:dev:local
