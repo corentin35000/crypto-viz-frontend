@@ -1,7 +1,7 @@
 services:
   nuxt:
     container_name: nuxt
-    image: cryptoviz/website-frontend:develop
+    image: cryptoviz/frontend:develop
     restart: always
     build:
       context: .
