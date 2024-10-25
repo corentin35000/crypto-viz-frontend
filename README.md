@@ -10,7 +10,7 @@
 
 <br /><br /><br /><br />
 
-🏗️ Architecture de l'Application / Infrastructure
+## 🏗️ Architecture de l'Application / Infrastructure
 Ce projet est structuré en quatre dépôts distincts pour assurer une modularité et une scalabilité maximales. Chaque dépôt est un microservice indépendant, permettant des mises à jour, des tests et un déploiement en continu pour chaque composant sans affecter les autres parties de l'application. Cette approche suit une architecture orientée microservices pour optimiser la flexibilité et la maintenabilité.
 
 1. crypto-viz-frontend
