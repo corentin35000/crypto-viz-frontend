@@ -27,13 +27,13 @@ Responsabilité : Il suit le modèle producteur/consommateur pour transmettre le
 
 3. `crypto-viz-backend` <br />
 Rôle : Service d’analyse des données collectées, qui traite et transforme les données reçues pour générer des analyses exploitables par le frontend. <br />
-Technologies : Construit avec un framework backend rapide, comme FastAPI (Python) ou Node.js avec Express. <br />
+Technologies : Construit avec un framework backend avec AdonisJS. <br />
 Responsabilité : Le backend consomme les données via crypto-viz-broker, les analyse, et expose les résultats sous forme d’API pour le frontend. Ce service est en charge de la logique métier et du traitement des données pour en faire des insights significatifs.
 <br />
  
 4. `crypto-viz-broker` <br />
 Rôle : Ce composant est le broker de messages et gère la communication entre le scraper, le backend, et le frontend. <br />
-Technologies : Utilisation de NATS ou RabbitMQ comme système de gestion de messages. <br />
+Technologies : Utilisation de NATS comme système de gestion de messages. <br />
 Responsabilité : Assure le transfert efficace et en temps réel des messages entre le scraper (producteur de données) et le backend (consommateur/analyste des données). Il permet la scalabilité de l'application en découplant les composants.
 
 <br /><br /><br /><br />
