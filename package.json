@@ -42,7 +42,7 @@
     "prepare": "husky && nuxi prepare"
   },
   "dependencies": {
-    "@pinia/nuxt": "^0.5.5",
+    "@pinia/nuxt": "^0.6.0",
     "axios": "^1.7.7",
     "luxon": "^3.5.0",
     "pinia": "^2.2.4",
