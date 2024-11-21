@@ -14,7 +14,9 @@
 import { NewsCard } from '#components'
 import type { News } from '~~/src-core/types/News'
 import { onMounted } from 'vue'
-import NatsService from '~~/src-core/services/nats_service'
+
+// Importer le service NATS
+const { $natsService } = useNuxtApp()
 
 /**
  * Tableau de News pour faire les tests en attendant le fetch API
@@ -42,13 +44,9 @@ const FetchNewsTest: News[] = [
   },
 ]
 
-const natsService: NatsService = new NatsService()
-
-onMounted(async (): Promise<void> => {
-  try {
-    await natsService.connect()
-  } catch (error) {
-    console.error('Erreur de connexion à NATS:', error)
-  }
+onMounted((): void => {
+  $natsService.subscribe('crypto.news.filtered', (message: string): void => {
+    console.log('Received message:', message)
+  })
 })
 </script>
