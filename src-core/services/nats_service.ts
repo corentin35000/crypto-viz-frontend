@@ -5,9 +5,21 @@ import type { NatsConnection, Subscription, Codec } from 'nats.ws'
  * @class NatsService
  */
 export default class NatsService {
+  private static instance: NatsService | null = null
   private nc: NatsConnection | null = null
   private readonly sc: Codec<string> = StringCodec()
   private readonly subscriptions: Map<string, Subscription> = new Map()
+
+  /**
+   * The singleton instance of the NatsService.
+   * @returns {NatsService} - The singleton instance of the NatsService.
+   */
+  public static getInstance(): NatsService {
+    if (!NatsService.instance) {
+      NatsService.instance = new NatsService()
+    }
+    return NatsService.instance
+  }
 
   /**
    * Connects to the NATS server using NKEY authentication.
