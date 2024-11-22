@@ -1,5 +1,43 @@
 <template>
   <h1 class="flex">INDEX PAGE</h1>
+  <section class="w-full flex-col">
+    <div class="flex items-center justify-around border">
+      <div class="m-3 w-1/2 border">
+        <h1 class="mb-4 text-2xl font-bold">OHLCV Candlestick Charts - Vue générale des prix</h1>
+        <pie-chart
+          :labels="['Tech', 'Finance', 'Industrie']"
+          :data="[40, 25, 15]"
+          :colors="['#FF5733', '#33FFBD', '#3375FF']"
+        />
+      </div>
+      <div class="m-3 w-1/2 border">
+        <h1 class="mb-4 text-2xl font-bold">Bar chart - Volume d’échange des cryptos</h1>
+        <pie-chart
+          :labels="['Tech', 'Finance', 'Industrie']"
+          :data="[40, 25, 15]"
+          :colors="['#FF5733', '#33FFBD', '#3375FF']"
+        />
+      </div>
+    </div>
+    <div class="flex items-center justify-around border">
+      <div class="m-3 w-1/2 border">
+        <h1 class="mb-4 text-2xl font-bold">Répartition des capitalisations</h1>
+        <pie-chart
+          :labels="['Tech', 'Finance', 'Industrie']"
+          :data="[40, 25, 15]"
+          :colors="['#FF5733', '#33FFBD', '#3375FF']"
+        />
+      </div>
+      <div class="m-3 w-1/2 border">
+        <h1 class="mb-4 text-2xl font-bold">Multi line chart - Indicateurs techniques</h1>
+        <pie-chart
+          :labels="['Tech', 'Finance', 'Industrie']"
+          :data="[40, 25, 15]"
+          :colors="['#FF5733', '#33FFBD', '#3375FF']"
+        />
+      </div>
+    </div>
+  </section>
   <news-card
     v-for="(news, index) in FetchNewsTest"
     :key="index"
