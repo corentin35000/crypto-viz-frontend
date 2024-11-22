@@ -8,12 +8,51 @@
     :date="news.date"
     :image="news.image"
   />
+  <section class="w-full flex-col">
+    <div class="flex items-center justify-around border">
+      <div class="m-3 w-1/2 border">
+        <h1 class="mb-4 text-2xl font-bold">OHLCV Candlestick Charts - Vue générale des prix</h1>
+        <pie
+          :labels="['Tech', 'Finance', 'Industrie']"
+          :data="[40, 25, 15]"
+          :colors="['#FF5733', '#33FFBD', '#3375FF']"
+        />
+      </div>
+      <div class="m-3 w-1/2 border">
+        <h1 class="mb-4 text-2xl font-bold">Bar chart - Volume d’échange des cryptos</h1>
+        <pie
+          :labels="['Tech', 'Finance', 'Industrie']"
+          :data="[40, 25, 15]"
+          :colors="['#FF5733', '#33FFBD', '#3375FF']"
+        />
+      </div>
+    </div>
+    <div class="flex items-center justify-around border">
+      <div class="m-3 w-1/2 border">
+        <h1 class="mb-4 text-2xl font-bold">Répartition des capitalisations</h1>
+        <pie
+          :labels="['Tech', 'Finance', 'Industrie']"
+          :data="[40, 25, 15]"
+          :colors="['#FF5733', '#33FFBD', '#3375FF']"
+        />
+      </div>
+      <div class="m-3 w-1/2 border">
+        <h1 class="mb-4 text-2xl font-bold">Multi line chart - Indicateurs techniques</h1>
+        <pie
+          :labels="['Tech', 'Finance', 'Industrie']"
+          :data="[40, 25, 15]"
+          :colors="['#FF5733', '#33FFBD', '#3375FF']"
+        />
+      </div>
+    </div>
+  </section>
 </template>
 
 <script setup lang="ts">
 import { NewsCard } from '#components'
 import type { News } from '~~/src-core/types/News'
 import { onMounted } from 'vue'
+import pie from '~/components/pie.vue'
 
 // Importer le service NATS
 const { $natsService } = useNuxtApp()
