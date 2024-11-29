@@ -4,8 +4,8 @@ export default defineNuxtPlugin(async (nuxtApp: any) => {
   const natsService: NatsService = NatsService.getInstance()
 
   try {
-    await natsService.connect()
     nuxtApp.provide('natsService', natsService)
+    await natsService.connect()
   } catch (error) {
     console.error('Failed to connect to NATS server:', error)
   }
