@@ -9,12 +9,18 @@ export default defineNuxtConfig({
       noscript: [],
     },
   },
-  srcDir: 'src-nuxt', // Directory of your source files
-  ssr: false, // Mettre a false pour : desktop (tauri)
+
+  // Directory of your source files
+  srcDir: 'src-nuxt',
+
+  // Mettre a false pour : desktop (tauri)
+  ssr: false,
+
   devtools: { enabled: true },
   telemetry: false,
   components: true,
   modules: ['@pinia/nuxt', '@nuxt/test-utils/module', '@nuxtjs/sitemap', '@nuxtjs/google-fonts', '@nuxtjs/tailwindcss'],
+
   vite: {
     // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
     // prevent vite from obscuring rust errors
@@ -46,6 +52,7 @@ export default defineNuxtConfig({
       },
     } as any,
   },
+
   /*nitro: {
     preset: 'node-cluster',
 
@@ -58,19 +65,24 @@ export default defineNuxtConfig({
   pinia: {
     storesDirs: ['./src-nuxt/stores/**'],
   },
+
   tailwindcss: {
     exposeConfig: true,
     viewer: true,
   },
+
   postcss: {
     plugins: {
       tailwindcss: {},
       autoprefixer: {},
     },
   },
+
   googleFonts: {
     families: {
       Poppins: true,
     },
   },
+
+  compatibilityDate: '2024-11-22',
 })
