@@ -3,7 +3,7 @@ import type { CandlestickData, OhlcvData, OhlcvRequest } from '../types/Ohlcv'
 
 /**
  * fetchOhlcvData description
- * @param {OhlcvRequest} ohlvcRequest
+ * @param {OhlcvRequest} ohlvcRequest - Requête pour les données des candlestick
  * @returns {Promise<CandlestickData[] | undefined>} - Data pour les candlestick
  */
 export const fetchOhlcvData: (ohlvcRequest: OhlcvRequest) => Promise<CandlestickData[] | undefined> = async (
