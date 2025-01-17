@@ -1,13 +1,3 @@
-<template>
-  <div class="min-h-screen bg-gray-100 p-8">
-    <div class="rounded-lg bg-white p-6 shadow-md">
-      <!-- Affichage du graphique avec les données OHLCV -->
-      <Chartohlcv v-if="!!candlestick" :ohlcvData="candlestick" />
-      <!--<loader v-else></loader>-->
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import type { Ref } from 'vue'
@@ -30,3 +20,13 @@ onMounted(async (): Promise<void> => {
   candlestick.value = await fetchOhlcvData(ohlcvRequest)
 })
 </script>
+
+<template>
+  <div class="min-h-screen bg-gray-100 p-8">
+    <div class="rounded-lg bg-white p-6 shadow-md">
+      <!-- Affichage du graphique avec les données OHLCV -->
+      <Chartohlcv v-if="!!candlestick" :ohlcvData="candlestick" />
+      <!--<loader v-else></loader>-->
+    </div>
+  </div>
+</template>
