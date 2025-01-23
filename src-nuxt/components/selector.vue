@@ -1,32 +1,22 @@
-<template>
-  <div>
-    <label for="duration" class="mb-2 block font-medium text-gray-700">Sélectionnez une durée :</label>
-    <select
-      id="duration"
-      v-model="selectedDuration"
-      @change="updateTimestamp"
-      class="block w-full rounded-lg border border-gray-300 p-2"
-    >
-      <option v-for="option in durations" :key="option.label" :value="option.label">
-        {{ option.label }}
-      </option>
-    </select>
-  </div>
-</template>
-
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import type { Ref } from 'vue'
+import { defineEmits } from 'vue'
 
 /**
- * Durées prédéfinies pour la sélection.
- * @typedef {object} Duration - Durée prédéfinie.
- * @property {string} label - Libellé de la durée.
- * @property {number} [days] - Nombre de jours.
- * @property {boolean} [currentYear] - Année en cours.
- * @property {boolean} [fromStart] - Depuis le début.
+ * Définit les événements émis par le composant.
  */
-type Duration = {
+const emit = defineEmits<{
+  (e: 'update-range', range: { label: string; startTimestamp: number; endTimestamp: number }): void
+  (e: 'update-currency', currency: string): void
+}>()
+
+/**
+ * Représente une plage de temps avec diverses options.
+ * @property {string} label - Le libellé de la plage de temps.
+ * @property {number} [days] - Nombre de jours définissant la plage (facultatif).
+ * @property {boolean} [currentYear] - Indique si la plage se limite à l'année en cours (facultatif).
+ * @property {boolean} [fromStart] - Indique si la plage commence depuis le début d'une période (facultatif).
+ */
+type Range = {
   label: string
   days?: number
   currentYear?: boolean
@@ -34,10 +24,10 @@ type Duration = {
 }
 
 /**
- * Durées prédéfinies pour la sélection.
+ * Définition des plages de temps disponibles.
  */
-const durations: Duration[] = [
-  { label: '1 jour', days: 1 },
+const ranges: Array<{ label: string; days?: number; currentYear?: boolean; fromStart?: boolean }> = [
+  { label: '1 jour', days: 2 },
   { label: '5 jours', days: 5 },
   { label: '1 mois', days: 30 },
   { label: '6 mois', days: 182 },
@@ -48,54 +38,55 @@ const durations: Duration[] = [
 ]
 
 /**
- * Emetteur d'événements pour communiquer avec le parent.
+ * Gère le changement de plage de temps.
+ * @param {Event} event - Événement de changement du sélecteur.
  */
-const emit: (e: 'update-timestamp', payload: number) => void = defineEmits<{
-  (e: 'update-timestamp', timestamp: number): void
-}>()
+const changeRange: (event: Event) => void = (event: Event): void => {
+  const value: string = (event.target as HTMLSelectElement).value
+  const selectedRange: Range | undefined = ranges.find((range: Range) => range.label === value)
 
-/**
- * Durée sélectionnée par défaut.
- */
-const selectedDuration: Ref<string> = ref<string>('1 jour')
+  if (!selectedRange) return
 
-/**
- * Calcule le timestamp basé sur la durée sélectionnée.
- * @returns {number} Le timestamp calculé.
- */
-const calculateTimestamp: () => number = (): number => {
   const now: number = Date.now()
-  const currentYear: number = new Date(now).getFullYear()
-  const startOfYear: number = new Date(currentYear, 0, 1).getTime()
+  let startTimestamp: number = now // Par défaut, le début est maintenant
+  let endTimestamp: number = now // Par défaut, la fin est maintenant
 
-  const selected: Duration | undefined = durations.find(
-    (duration: Duration) => duration.label === selectedDuration.value,
-  )
-
-  if (selected?.days) {
-    return now - selected.days * 24 * 60 * 60 * 1000
-  } else if (selected?.currentYear) {
-    return startOfYear
-  } else if (selected?.fromStart) {
-    return 0 // Depuis le début
+  if (selectedRange.days) {
+    startTimestamp = now - selectedRange.days * 24 * 60 * 60 * 1000
+  } else if (selectedRange.currentYear) {
+    const currentYear: number = new Date().getFullYear()
+    startTimestamp = new Date(currentYear, 0, 1).getTime() // Début de l'année
+  } else if (selectedRange.fromStart) {
+    startTimestamp = 0 // Timestamp depuis le début (1970)
   }
 
-  return now
+  // Émet la plage de temps sélectionnée
+  emit('update-range', { label: selectedRange.label, startTimestamp, endTimestamp })
 }
 
 /**
- * Met à jour le `timestamp` et le communique au parent.
- * @returns {void}
+ * Gère le changement de devise.
+ * @param {Event} event - Événement de changement du sélecteur.
  */
-const updateTimestamp: () => void = (): void => {
-  const timestamp: number = calculateTimestamp()
-  emit('update-timestamp', timestamp)
+const changeCurrency = (event: Event): void => {
+  const value: string = (event.target as HTMLSelectElement).value
+  emit('update-currency', value)
 }
-
-/**
- * Emet le timestamp initial dès que le composant est monté
- */
-onMounted((): void => {
-  updateTimestamp()
-})
 </script>
+
+<template>
+  <div class="flex space-x-4 p-4">
+    <!-- Sélection de la plage de temps -->
+    <select @change="changeRange" class="rounded-md border p-2" aria-label="Sélecteur de plage de temps">
+      <option v-for="range in ranges" :key="range.label" :value="range.label">
+        {{ range.label }}
+      </option>
+    </select>
+
+    <!-- Sélection de la devise -->
+    <select @change="changeCurrency" class="rounded-md border p-2" aria-label="Sélecteur de devise">
+      <option value="BTCUSDT">BTC/USDT</option>
+      <option value="ETHUSDT">ETH/USDT</option>
+    </select>
+  </div>
+</template>
