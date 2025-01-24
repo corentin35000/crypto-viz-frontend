@@ -2,12 +2,24 @@
 import { defineEmits } from 'vue'
 
 /**
- * Définit les événements émis par le composant.
+ * Définition du type pour les événements émis.
+ * @typedef {EmitType} EmitType - Type des événements émis par le composant.
+ * @property {Function} 'update-range' - Événement déclenché lors de la mise à jour de l'intervalle de temps.
+ * @param {string} e - Nom de l'événement, ici 'update-range'.
+ * @param {{ label: string; startTimestamp: number; endTimestamp: number }} range - Données associées à l'intervalle de temps.
+ * @param {string} range.label - Libellé de l'intervalle de temps.
+ * @param {number} range.startTimestamp - Timestamp de début de l'intervalle.
+ * @param {number} range.endTimestamp - Timestamp de fin de l'intervalle.
+ * @property {Function} 'update-currency' - Événement déclenché lors de la mise à jour de la cryptomonnaie sélectionnée.
+ * @param {string} e - Nom de l'événement, ici 'update-currency'.
+ * @param {string} currency - Symbole de la cryptomonnaie mise à jour.
  */
-const emit = defineEmits<{
+type EmitType = {
   (e: 'update-range', range: { label: string; startTimestamp: number; endTimestamp: number }): void
   (e: 'update-currency', currency: string): void
-}>()
+}
+
+const emit: EmitType = defineEmits<EmitType>()
 
 /**
  * Représente une plage de temps avec diverses options.
@@ -68,7 +80,7 @@ const changeRange: (event: Event) => void = (event: Event): void => {
  * Gère le changement de devise.
  * @param {Event} event - Événement de changement du sélecteur.
  */
-const changeCurrency = (event: Event): void => {
+const changeCurrency: (event: Event) => void = (event: Event): void => {
   const value: string = (event.target as HTMLSelectElement).value
   emit('update-currency', value)
 }
