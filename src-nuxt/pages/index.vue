@@ -1,61 +1,64 @@
 <template>
-  <h1 class="flex">INDEX PAGE</h1>
-  <news-card
-    v-for="(news, index) in FetchNewsTest"
-    :key="index"
-    :title="news.title"
-    :content="news.content"
-    :date="news.date"
-    :image="news.image"
-  />
+  <header>
+    <Selector @update-range="handleRangeUpdate" @update-currency="handleCurrencyUpdate" />
+  </header>
+
   <section class="w-full flex-col">
     <div class="flex items-center justify-around border">
       <div class="m-3 w-1/2 border">
         <h1 class="mb-4 text-2xl font-bold">OHLCV Candlestick Charts - Vue générale des prix</h1>
-        <pie
-          :labels="['Tech', 'Finance', 'Industrie']"
-          :data="[40, 25, 15]"
-          :colors="['#FF5733', '#33FFBD', '#3375FF']"
-        />
+        <!-- Pie Chart pour les prix, passe la sélection range -->
+        <Pie :range="selectedRange"/>
       </div>
       <div class="m-3 w-1/2 border">
         <h1 class="mb-4 text-2xl font-bold">Bar chart - Volume d’échange des cryptos</h1>
-        <pie
-          :labels="['Tech', 'Finance', 'Industrie']"
-          :data="[40, 25, 15]"
-          :colors="['#FF5733', '#33FFBD', '#3375FF']"
-        />
+        <!-- Autre Pie Chart avec des données fictives -->
+        <Pie :labels="['Tech', 'Finance', 'Industrie']" :data="[40, 25, 15]" :colors="['#FF5733', '#33FFBD', '#3375FF']" />
       </div>
     </div>
+
     <div class="flex items-center justify-around border">
       <div class="m-3 w-1/2 border">
         <h1 class="mb-4 text-2xl font-bold">Répartition des capitalisations</h1>
-        <pie
-          :labels="['Tech', 'Finance', 'Industrie']"
-          :data="[40, 25, 15]"
-          :colors="['#FF5733', '#33FFBD', '#3375FF']"
-        />
+        <Pie :labels="['Tech', 'Finance', 'Industrie']" :data="[40, 25, 15]" :colors="['#FF5733', '#33FFBD', '#3375FF']" />
       </div>
       <div class="m-3 w-1/2 border">
         <h1 class="mb-4 text-2xl font-bold">Multi line chart - Indicateurs techniques</h1>
-        <pie
-          :labels="['Tech', 'Finance', 'Industrie']"
-          :data="[40, 25, 15]"
-          :colors="['#FF5733', '#33FFBD', '#3375FF']"
-        />
+        <Pie :labels="['Tech', 'Finance', 'Industrie']" :data="[40, 25, 15]" :colors="['#FF5733', '#33FFBD', '#3375FF']" />
       </div>
     </div>
+
+    <news-card v-for="(news, index) in FetchNewsTest" :key="index" :title="news.title" :content="news.content"
+      :date="news.date" :image="news.image" />
   </section>
 </template>
 
 <script setup lang="ts">
 import { NewsCard } from '#components'
 import type { News } from '~~/src-core/types/News'
-import { onMounted } from 'vue'
-import pie from '~/components/pie.vue'
+import { ref, onMounted } from 'vue'
+import Pie from '~/components/pie.vue'
+import Selector from '~/components/selector.vue'
 
 // Importer le service NATS
 const { $natsService } = useNuxtApp()
+
+// Variables pour stocker les données sélectionnées
+const selectedRange = ref<{ label: string; startTimestamp: number; endTimestamp: number }>({
+  label: '',
+  startTimestamp: 0,
+  endTimestamp: 0,
+})
+const selectedCurrency = ref<string>('BTCUSDT')
+
+// Recevoir les données du composant enfant
+const handleRangeUpdate = (range: { label: string; startTimestamp: number; endTimestamp: number }) => {
+  selectedRange.value = range
+}
+
+const handleCurrencyUpdate = (currency: string) => {
+  selectedCurrency.value = currency
+}
 
 /**
  * Tableau de News pour faire les tests en attendant le fetch API
