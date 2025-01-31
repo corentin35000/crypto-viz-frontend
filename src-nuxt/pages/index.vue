@@ -3,65 +3,99 @@
     <Selector @update-range="handleRangeUpdate" @update-currency="handleCurrencyUpdate" />
   </header>
 
-  <section class="w-full flex-col">
-    <div class="flex items-center justify-around border">
-      <div class="m-3 w-1/2 border">
+  <section class="flex w-full flex-col gap-6">
+    <!-- Première ligne des graphiques -->
+    <div class="flex items-center justify-around border p-4">
+      <div class="m-3 w-1/2 border p-4">
         <h1 class="mb-4 text-2xl font-bold">OHLCV Candlestick Charts - Vue générale des prix</h1>
-        <!-- Pie Chart pour les prix, passe la sélection range -->
-        <Pie :range="selectedRange"/>
+        <Ohlcv :range="selectedRange" :currency="selectedCurrency" />
       </div>
-      <div class="m-3 w-1/2 border">
+      <div class="m-3 w-1/2 border p-4">
         <h1 class="mb-4 text-2xl font-bold">Bar chart - Volume d’échange des cryptos</h1>
-        <!-- Autre Pie Chart avec des données fictives -->
-        <Pie :labels="['Tech', 'Finance', 'Industrie']" :data="[40, 25, 15]" :colors="['#FF5733', '#33FFBD', '#3375FF']" />
+        <Bar :timestamp="selectedRange.startTimestamp" />
       </div>
     </div>
 
-    <div class="flex items-center justify-around border">
-      <div class="m-3 w-1/2 border">
+    <!-- Deuxième ligne des graphiques -->
+    <div class="flex items-center justify-around border p-4">
+      <div class="m-3 w-1/2 border p-4">
         <h1 class="mb-4 text-2xl font-bold">Répartition des capitalisations</h1>
-        <Pie :labels="['Tech', 'Finance', 'Industrie']" :data="[40, 25, 15]" :colors="['#FF5733', '#33FFBD', '#3375FF']" />
+        <Pie :range="selectedRange" :currency="selectedCurrency" />
       </div>
-      <div class="m-3 w-1/2 border">
+      <div class="m-3 w-1/2 border p-4">
         <h1 class="mb-4 text-2xl font-bold">Multi line chart - Indicateurs techniques</h1>
-        <Pie :labels="['Tech', 'Finance', 'Industrie']" :data="[40, 25, 15]" :colors="['#FF5733', '#33FFBD', '#3375FF']" />
+        <Multilinechart :timestamp="selectedRange.startTimestamp" :crypto="selectedCurrency" :range="selectedRange" />
       </div>
     </div>
 
-    <news-card v-for="(news, index) in FetchNewsTest" :key="index" :title="news.title" :content="news.content"
-      :date="news.date" :image="news.image" />
+    <!-- Affichage des actualités -->
+    <div>
+      <news-card
+        v-for="(news, index) in FetchNewsTest"
+        :key="index"
+        :title="news.title"
+        :content="news.content"
+        :date="news.date"
+        :image="news.image"
+      />
+    </div>
   </section>
 </template>
 
 <script setup lang="ts">
+import { ref, watchEffect } from 'vue'
 import { NewsCard } from '#components'
 import type { News } from '~~/src-core/types/News'
-import { ref, onMounted } from 'vue'
 import Pie from '~/components/pie.vue'
 import Selector from '~/components/selector.vue'
+import Ohlcv from '~/components/chartohlcv.vue'
+import Bar from '~/components/barchart.vue'
+import Multilinechart from '~/components/multilinechart.vue'
 
-// Importer le service NATS
-const { $natsService } = useNuxtApp()
-
-// Variables pour stocker les données sélectionnées
-const selectedRange = ref<{ label: string; startTimestamp: number; endTimestamp: number }>({
-  label: '',
-  startTimestamp: 0,
-  endTimestamp: 0,
+// Variables réactives pour stocker les sélections
+const selectedRange: Ref<{ label: string; startTimestamp: number; endTimestamp: number }> = ref({
+  label: '24H',
+  startTimestamp: Date.now() - 24 * 60 * 60 * 1000,
+  endTimestamp: Date.now(),
 })
-const selectedCurrency = ref<string>('BTCUSDT')
 
-// Recevoir les données du composant enfant
-const handleRangeUpdate = (range: { label: string; startTimestamp: number; endTimestamp: number }) => {
+const selectedCurrency: Ref<string> = ref('BTCUSDT')
+
+/**
+ * Met à jour la plage de données lorsqu'une nouvelle sélection est effectuée.
+ * @param {Object} range - L'objet contenant la plage de temps sélectionnée.
+ * @param {string} range.label - L'étiquette de la plage sélectionnée.
+ * @param {number} range.startTimestamp - Le timestamp de début de la plage.
+ * @param {number} range.endTimestamp - Le timestamp de fin de la plage.
+ * @returns {void}
+ */
+const handleRangeUpdate = (range: { label: string; startTimestamp: number; endTimestamp: number }): void => {
   selectedRange.value = range
 }
 
-const handleCurrencyUpdate = (currency: string) => {
+/**
+ * Met à jour la devise sélectionnée.
+ * @param {string} currency - Le symbole de la devise sélectionnée.
+ * @returns {void}
+ */
+const handleCurrencyUpdate = (currency: string): void => {
   selectedCurrency.value = currency
 }
 
 /**
- * Tableau de News pour faire les tests en attendant le fetch API
+ * Observe les modifications des variables réactives pour mettre à jour les graphiques.
+ * Enregistre les nouvelles sélections de plage et de devise pour les graphiques.
+ * Cette fonction est appelée chaque fois que l'une des variables réactives change.
+ * @returns {void}
+ */
+watchEffect(() => {
+  console.log('Données mises à jour :', selectedRange.value, selectedCurrency.value)
+  // On pourrait appeler une API ici pour actualiser les graphiques
+})
+
+/**
+ * Tableau simulé de News pour les tests en attendant l'API.
+ * @type {Array<News>}
  */
 const FetchNewsTest: News[] = [
   {
@@ -85,10 +119,4 @@ const FetchNewsTest: News[] = [
       'https://media.istockphoto.com/id/1387606902/fr/vectoriel/étiquette-des-dernières-nouvelles-avec-mégaphone-dernières-nouvelles-annoncez-licône-du.jpg?s=612x612&w=0&k=20&c=ApyxpBl972vVJi8nLySaPSZv8kSlBcNnqswto0UKhpo=',
   },
 ]
-
-onMounted((): void => {
-  $natsService.subscribe('crypto.news.filtered', (message: string): void => {
-    console.log('Received message:', message)
-  })
-})
 </script>
