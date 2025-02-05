@@ -19,8 +19,14 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   telemetry: false,
   components: true,
-  modules: ['@pinia/nuxt', '@nuxt/test-utils/module', '@nuxtjs/sitemap', '@nuxtjs/google-fonts', '@nuxtjs/tailwindcss'],
-
+  modules: [
+    '@pinia/nuxt',
+    '@nuxt/test-utils/module',
+    '@nuxtjs/sitemap',
+    '@nuxtjs/google-fonts',
+    '@nuxtjs/tailwindcss',
+    'nuxt-workers',
+  ],
   vite: {
     // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
     // prevent vite from obscuring rust errors

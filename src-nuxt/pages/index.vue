@@ -1,91 +1,87 @@
 <template>
-  <h1 class="flex">INDEX PAGE</h1>
-  <news-card
-    v-for="(news, index) in FetchNewsTest"
-    :key="index"
-    :title="news.title"
-    :content="news.content"
-    :date="news.date"
-    :image="news.image"
-  />
   <section class="w-full flex-col">
-    <div class="flex items-center justify-around border">
-      <div class="m-3 w-1/2 border">
-        <h1 class="mb-4 text-2xl font-bold">OHLCV Candlestick Charts - Vue générale des prix</h1>
-        <pie
-          :labels="['Tech', 'Finance', 'Industrie']"
-          :data="[40, 25, 15]"
-          :colors="['#FF5733', '#33FFBD', '#3375FF']"
-        />
-      </div>
-      <div class="m-3 w-1/2 border">
-        <h1 class="mb-4 text-2xl font-bold">Bar chart - Volume d’échange des cryptos</h1>
-        <pie
-          :labels="['Tech', 'Finance', 'Industrie']"
-          :data="[40, 25, 15]"
-          :colors="['#FF5733', '#33FFBD', '#3375FF']"
-        />
-      </div>
-    </div>
-    <div class="flex items-center justify-around border">
-      <div class="m-3 w-1/2 border">
-        <h1 class="mb-4 text-2xl font-bold">Répartition des capitalisations</h1>
-        <pie
-          :labels="['Tech', 'Finance', 'Industrie']"
-          :data="[40, 25, 15]"
-          :colors="['#FF5733', '#33FFBD', '#3375FF']"
-        />
-      </div>
-      <div class="m-3 w-1/2 border">
-        <h1 class="mb-4 text-2xl font-bold">Multi line chart - Indicateurs techniques</h1>
-        <pie
-          :labels="['Tech', 'Finance', 'Industrie']"
-          :data="[40, 25, 15]"
-          :colors="['#FF5733', '#33FFBD', '#3375FF']"
-        />
-      </div>
+    <div class="border p-4">
+      <h1 class="text-xl font-bold">Messages reçus via NATS</h1>
+      <ul>
+        <li v-for="(msg, index) in processedMessages" :key="index">
+          {{ msg }}
+        </li>
+      </ul>
     </div>
   </section>
 </template>
 
-<script setup lang="ts">
-import { NewsCard } from '#components'
-import type { News } from '~~/src-core/types/News'
-import { onMounted } from 'vue'
-import pie from '~/components/pie.vue'
+<script lang="ts" setup>
+import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { useNuxtApp } from '#app'
+import NatsWorker from '~/workers/natsWorker.ts?worker'
+import type { AxiosResponse } from 'axios'
+import axios from 'axios'
 
-// Importer le service NATS
-const { $natsService } = useNuxtApp()
+// Liste des messages traités
+const processedMessages: Ref<string[]> = ref<string[]>([])
+
+// Initialisation du Worker
+const worker: Worker = new NatsWorker()
 
 /**
- * Tableau de News pour faire les tests en attendant le fetch API
+ * onMounted hook
+ * @returns {void}
  */
-const FetchNewsTest: News[] = [
-  {
-    title: 'Nouvelle fonctionnalité disponible',
-    content: "Découvrez les nouvelles options dans la dernière version de l'application.",
-    date: '2024-11-08T10:00:00',
-    image: 'https://thumbs.dreamstime.com/b/nouvelles-42301371.jpg',
-  },
-  {
-    title: 'Maintenance programmée',
-    content: 'Nous effectuerons une maintenance ce week-end. Merci pour votre compréhension.',
-    date: '2024-11-09T08:00:00',
-    image:
-      'https://yt3.googleusercontent.com/GjDLYFGF4IQaUobUK-6q3nOsU4o8fRMl4XgVipPWRqdRVt61s2LqgnbBXu3-qYL4Ab2xsfVo=s900-c-k-c0x00ffffff-no-rj',
-  },
-  {
-    title: 'Mise à jour de sécurité',
-    content: 'Une mise à jour de sécurité a été déployée pour corriger des vulnérabilités critiques.',
-    date: '2024-11-07T14:30:00',
-    image:
-      'https://media.istockphoto.com/id/1387606902/fr/vectoriel/étiquette-des-dernières-nouvelles-avec-mégaphone-dernières-nouvelles-annoncez-licône-du.jpg?s=612x612&w=0&k=20&c=ApyxpBl972vVJi8nLySaPSZv8kSlBcNnqswto0UKhpo=',
-  },
-]
-
-onMounted((): void => {
-  $natsService.subscribe('crypto.news.filtered', (message: string): void => {
-    console.log('Received message:', message)
-  })
+onMounted(async (): Promise<void> => {
+  await fetchStoredNews()
+  setupNatsSubscription()
 })
+
+/**
+ * onBeforeUnmount hook
+ * @returns {void}
+ */
+onBeforeUnmount((): void => {
+  // Arrête le Worker avant de détruire le composant
+  worker.terminate()
+})
+
+/**
+ * Configure l'abonnement au broker NATS pour écouter les messages en temps réel
+ * @returns {void}
+ */
+const setupNatsSubscription: () => void = (): void => {
+  // Injection de $natsService
+  const { $natsService } = useNuxtApp()
+
+  /**
+   * Abonnement au sujet 'crypto.news.filtered' de NATS pour recevoir
+   * les messages du broker par rapport au backend
+   * @param {string} message - Message reçu
+   * @returns {void}
+   */
+  $natsService.subscribe('crypto.news.filtered', (message: string): void => {
+    // Envoie le message brut au Worker pour traitement
+    worker.postMessage({ message })
+  })
+
+  /**
+   * Récupère les messages traités par le Worker
+   * @param {MessageEvent} messageEvent - Événement de message
+   * @returns {void}
+   */
+  worker.onmessage = (messageEvent: MessageEvent): void => {
+    processedMessages.value.push(messageEvent.data.processedMessage) // Ajoute le message traité
+  }
+}
+
+/**
+ * Récupère les news déjà enregistrées côté backend au chargement de la page
+ * @returns {Promise<void>}
+ */
+const fetchStoredNews: () => Promise<void> = async (): Promise<void> => {
+  try {
+    const response: AxiosResponse<any, any> = await axios.get(import.meta.env.VITE_BASE_URL_API + '/news')
+    console.log('News récupérées : ', response.data)
+    processedMessages.value = response.data
+  } catch (error: any) {
+    console.error('Erreur lors de la récupération des news : ', error)
+  }
+}
 </script>
