@@ -31,17 +31,19 @@
     </div>
 
     <!-- Affichage des actualités en deux colonnes -->
-    <h1 class="text-center text-3xl font-bold">Actualités</h1>
-    <div class="grid grid-cols-2 gap-4 px-6 pb-10">
+    <h1 class="text-center text-3xl font-bold">Actualités BTC / ETHEREUM</h1>
+    <div class="grid grid-cols-2 gap-6 px-6 pb-10" v-if="processedNews.length > 0">
       <news-card
-        v-for="(news, index) in processedMessages"
+        v-for="(news, index) in processedNews"
         :key="index"
         :title="news.title"
         :content="news.content"
         :date="news.date"
         :image="news.image"
+        class="mb-4"
       />
     </div>
+    <div v-else class="text-center text-2xl font-bold text-gray-500">Aucune actualité à afficher</div>
   </section>
 </template>
 
@@ -94,8 +96,8 @@ const handleCurrencyUpdate: (currency: string) => void = (currency: string): voi
   selectedCurrency.value = currency
 }
 
-// Liste des messages traités
-const processedMessages: Ref<News[]> = ref([])
+// Liste des news traitées
+const processedNews: Ref<News[]> = ref([])
 
 // Initialisation du Worker
 const worker: Worker = new NatsWorker()
@@ -134,7 +136,8 @@ const setupNatsSubscription: () => void = (): void => {
    */
   $natsService.subscribe('crypto.news.filtered', (message: string): void => {
     // Envoie le message brut au Worker pour traitement
-    worker.postMessage({ message })
+    // worker.postMessage({ message })
+    processedNews.value.push(JSON.parse(message))
   })
 
   /**
@@ -143,7 +146,8 @@ const setupNatsSubscription: () => void = (): void => {
    * @returns {void}
    */
   worker.onmessage = (messageEvent: MessageEvent): void => {
-    processedMessages.value.push(messageEvent.data.processedMessage) // Ajoute le message traité
+    // Ajoute le message traité à la liste des messages traités
+    processedNews.value.push(messageEvent.data.processedMessage)
   }
 }
 
@@ -155,7 +159,7 @@ const fetchStoredNews: () => Promise<void> = async (): Promise<void> => {
   try {
     const response: AxiosResponse<any, any> = await axios.get(import.meta.env.VITE_BASE_URL_API + '/news')
     for (const news of response.data) {
-      processedMessages.value.push({
+      processedNews.value.push({
         title: news.title,
         content: news.content,
         date: news.createdAt, // remplacer par la date de l'actualité et pas la date de création en base de données
@@ -163,7 +167,6 @@ const fetchStoredNews: () => Promise<void> = async (): Promise<void> => {
         image: news?.image,
       })
     }
-    console.log('processedMessages : ', processedMessages.value)
   } catch (error: any) {
     console.error('Erreur lors de la récupération des news : ', error)
   }
