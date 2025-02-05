@@ -3,7 +3,7 @@
 ## 🛠 Tech Stack
 
 - TypeScript (Language)
-- Nuxt (Framework for Desktop, Mobile and Web)
+- Nuxt (Framework Web)
 - CI / CD (Github Actions)
 - Docker / DockerCompose (Development-Local)
 - Kubernetes (Development-Remote, Staging and Production)
