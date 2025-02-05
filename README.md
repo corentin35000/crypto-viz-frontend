@@ -3,7 +3,7 @@
 ## 🛠 Tech Stack
 
 - TypeScript (Language)
-- Nuxt (Framework for Desktop, Mobile and Web)
+- Nuxt (Framework Web)
 - CI / CD (Github Actions)
 - Docker / DockerCompose (Development-Local)
 - Kubernetes (Development-Remote, Staging and Production)
@@ -27,9 +27,10 @@ Ce projet est structuré en quatre dépôts distincts, chacun jouant un rôle es
 #### 1. Frontend : `crypto-viz-frontend`
 
 - **Rôle** : Fournit l'interface utilisateur (UI) pour visualiser en temps réel les données et analyses relatives aux cryptomonnaies.
-- **Technologies** : Développé avec **Nuxt** et **TypeScript**, il intègre des bibliothèques de visualisation comme **D3.js** ou **Chart.js** pour afficher les données en prenant en compte leur dimension temporelle.
-- **Responsabilité** : Le frontend consomme deux sources de données :
-  - Les API du backend pour obtenir les données de marché et les analyses.
+- **Technologies** : Développé avec **Nuxt** et **TypeScript**, il intègre des bibliothèques de visualisation comme **apexchart** et **chart.js** pour afficher les données.
+- **Responsabilité** : Le frontend consomme 3 sources de données :
+  - Les API des plateformes de marché pour obtenir les données de marché et les analyses.
+  - L'API du backend pour récupérer les actualités passé lors du chargement de la page la première fois
   - Le broker de messages pour recevoir les actualités filtrées du backend en temps réel.
 
 #### 2. Scraper : `crypto-viz-scraper`
@@ -43,9 +44,9 @@ Ce projet est structuré en quatre dépôts distincts, chacun jouant un rôle es
 - **Rôle** : Analyse les données collectées par le scraper, filtre les informations pertinentes et les transforme pour les rendre exploitables par le frontend.
 - **Technologies** : Construit avec **AdonisJS**, un framework backend offrant une structure complète pour la gestion des APIs et la logique métier.
 - **Responsabilité** :
-  - Consomme les données via le broker de messages, filtre et enrichit les actualités pour créer des insights exploitables.
+  - Consomme les données via le broker de messages, filtre, sauvegarde en base de donnée.
   - Publie les actualités filtrées sur un sujet dédié pour le frontend.
-  - Expose des API HTTP permettant de récupérer les informations de marché, pour lesquelles il interroge directement des APIs externes de données financières.
+  - Expose une API pour récupérer les actualités filtrées lors de la première fois.
 
 #### 4. Broker : `crypto-viz-broker`
 
@@ -63,8 +64,8 @@ Ce projet est structuré en quatre dépôts distincts, chacun jouant un rôle es
 1. Le **scraper** publie les dernières actualités sur le sujet `crypto.news` du broker.
 2. Le **backend** souscrit au sujet `crypto.news`, filtre et traite les informations, puis publie les actualités filtrées et enrichies sur un nouveau sujet `crypto.news.filtered`.
 3. Le **frontend** souscrit au sujet `crypto.news.filtered` pour obtenir en temps réel les informations actualisées.
-4. Pour les données de marché, le **frontend** interroge directement le backend via des appels HTTP, qui utilise des APIs externes pour récupérer les informations les plus récentes.
-
+4. Pour les données de marché, le **frontend** interroge directement les plateformes du marché via des appels HTTP.
+   
 <br />
 
 ### Avantages de cette Architecture
