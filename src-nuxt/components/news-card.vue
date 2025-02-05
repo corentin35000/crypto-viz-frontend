@@ -18,6 +18,7 @@ import type { News } from '~~/src-core/types/News'
 const props: News = defineProps<News>()
 
 const formattedDate: ComputedRef<string> = computed(() =>
+  // @ts-ignore
   new Date(props.date).toLocaleString('fr-FR', {
     dateStyle: 'long',
     timeStyle: 'short',
