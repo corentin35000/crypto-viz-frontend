@@ -1,3 +1,9 @@
+<template>
+  <div class="relative rounded-lg bg-white p-6 shadow-md">
+    <canvas ref="chartRef" />
+  </div>
+</template>
+
 <script setup lang="ts">
 import { defineProps, ref, watch, onMounted, type Ref } from 'vue'
 import { Chart, LineController, LineElement, PointElement, LinearScale, Title, CategoryScale, Tooltip } from 'chart.js'
@@ -160,9 +166,3 @@ onMounted(() => {
   initializeChart()
 })
 </script>
-
-<template>
-  <div class="relative rounded-lg bg-white p-6 shadow-md">
-    <canvas ref="chartRef" />
-  </div>
-</template>

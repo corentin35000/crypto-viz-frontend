@@ -49,7 +49,6 @@ const errorMessage: Ref<string | null> = ref<string | null>(null)
 const fetchCryptoVolumes: (timestamp: number) => Promise<BarChartData[]> = async (
   timestamp: number,
 ): Promise<BarChartData[]> => {
-  console.log('Récupération des données pour le timestamp :', timestamp)
   const symbols: string[] = ['BTCUSDT', 'ETHUSDT', 'BNBUSDT']
   const interval: string = '1d'
   const endTime: number = timestamp + 5 * 24 * 60 * 60 * 1000

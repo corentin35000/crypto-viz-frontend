@@ -1,4 +1,21 @@
-<script setup lang="ts">
+<template>
+  <div class="flex space-x-4 p-4">
+    <!-- Sélection de la plage de temps -->
+    <select @change="changeRange" class="rounded-md border p-2" aria-label="Sélecteur de plage de temps">
+      <option v-for="range in ranges" :key="range.label" :value="range.label">
+        {{ range.label }}
+      </option>
+    </select>
+
+    <!-- Sélection de la devise -->
+    <select @change="changeCurrency" class="rounded-md border p-2" aria-label="Sélecteur de devise">
+      <option value="BTCUSDT">BTC/USDT</option>
+      <option value="ETHUSDT">ETH/USDT</option>
+    </select>
+  </div>
+</template>
+
+<script lang="ts" setup>
 import { defineEmits } from 'vue'
 
 /**
@@ -85,20 +102,3 @@ const changeCurrency: (event: Event) => void = (event: Event): void => {
   emit('update-currency', value)
 }
 </script>
-
-<template>
-  <div class="flex space-x-4 p-4">
-    <!-- Sélection de la plage de temps -->
-    <select @change="changeRange" class="rounded-md border p-2" aria-label="Sélecteur de plage de temps">
-      <option v-for="range in ranges" :key="range.label" :value="range.label">
-        {{ range.label }}
-      </option>
-    </select>
-
-    <!-- Sélection de la devise -->
-    <select @change="changeCurrency" class="rounded-md border p-2" aria-label="Sélecteur de devise">
-      <option value="BTCUSDT">BTC/USDT</option>
-      <option value="ETHUSDT">ETH/USDT</option>
-    </select>
-  </div>
-</template>
